@@ -1,0 +1,29 @@
+.white { color: white; }
+.expand100 { width: 100%;}
+.nav-link, .nav-item { color: white; font-weight: bolder;}
+
+.kn-filter, kn-form-table {
+    margin:0;
+    padding: 1rem;
+    border: 1px black solid;
+    border-radius: 0.25rem;
+    background-color: rgb(245, 245, 245);
+}
+
+.kn-filter {
+    background-color: aliceblue;
+}
+table, tr, th, td {
+    border: solid black 1px;
+    border-collapse: collapse;
+    border-radius: 0.25rem;
+}
+
+.kn-behind-filter {
+    margin-top: 0.5rem;
+    margin-bottom: 0.5rem;
+}
+input, button {
+    margin-bottom: 0.5rem;
+    border-radius: 0.25rem;
+}

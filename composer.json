@@ -1,7 +1,7 @@
 {
-    "name": "laravel/laravel",
+    "name": "hamatoma/langutor",
     "type": "project",
-    "description": "The skeleton application for the Laravel framework.",
+    "description": "A web application helping learning natural languages",
     "keywords": ["laravel", "framework"],
     "license": "MIT",
     "require": {

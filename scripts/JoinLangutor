@@ -1,0 +1,4 @@
+#! /bin/bash
+cd /home/ws/php/langutor/
+python3 vendor/hamatoma/laraknife/scripts/joinjson.py resources/lang/sources/* resources/lang/de_DE.json
+
