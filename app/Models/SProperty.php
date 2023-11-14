@@ -1,0 +1,1 @@
+../../vendor/hamatoma/laraknife/templates/Models/SProperty.php

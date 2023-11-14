@@ -1,0 +1,1 @@
+../../vendor/hamatoma/laraknife/templates/database/migrations/2023_10_30_create_sproperties_table.php
