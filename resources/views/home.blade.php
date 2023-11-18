@@ -16,7 +16,8 @@
                     {{ __('You are logged in!') }}
                     <ul>
                         <li><a href="/sproperty-index">{{ __("Scoped Properties") }}</li>
-                        <li><a href="/user-index">{{ __("Users") }}</li>
+                        <!--li><a href="/user-index">{{ __("Users") }}</li-->
+                        <li><a href="/noun-index">{{ __("Nouns") }}</li>
 
                     </ul>
                 </div>

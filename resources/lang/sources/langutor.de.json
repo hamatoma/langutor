@@ -1,5 +1,13 @@
 {
-"abcd": "abcd",
-"kkkk": "kkkk",
-"zzzz": "zzzz"
+    "Article": "Artikel",
+    "Change of a Noun": "Ändern eines Substantivs",
+    "Creation of a Noun": "Erstellen eines Substantivs",
+    "Feminine": "Feminin",
+    "Gender": "Genus",
+    "Masculine": "Maskulin",
+    "Neuter": "Neutrum",
+    "Noun": "Substantiv",
+    "Plural": "Plural",
+    "Usage": "Verwendung",
+    "zzzz": "zzzz"
 }

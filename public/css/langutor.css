@@ -27,3 +27,8 @@ input, button {
     margin-bottom: 0.5rem;
     border-radius: 0.25rem;
 }
+.logout {
+    color: #CCC;
+    background-color: #333;
+    border-color: #CCC;
+}

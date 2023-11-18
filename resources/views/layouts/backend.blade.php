@@ -24,7 +24,7 @@
     <header>
         <nav class="navbar navbar-expand-md bg-primary ">
             <a class="navbar-brand" href="/home">Booking</a>
-            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExampleDefault" aria-controls="navbarsExampleDefault" aria-expanded="false" aria-label="Toggle navigation">
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExampleDefault" aria-expanded="false" aria-label="Toggle navigation">
               <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarTop">
@@ -50,7 +50,6 @@
         </nav>
     </header>
         @yield('content')
-    </div>
 </body>
 
 </html>
