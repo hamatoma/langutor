@@ -14,11 +14,10 @@ return new class extends Migration
         Schema::create('nouns', function (Blueprint $table) {
             $table->id();
             $table->timestamps();
-            $table->string('name', 64);
+            $table->foreignId('word_id')->references('id')->on('words');
             $table->string('plural', 64);
             // foreign key of sproperties: but sproperties.id is integer, not biginteger
             $table->integer('genus');
-            $table->text('usage');
             // foreign key of users
             $table->foreignId('verifiedby')->nullable()->default(null)->references('id')->on('users');
         });

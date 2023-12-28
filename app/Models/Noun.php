@@ -8,5 +8,5 @@ use Illuminate\Database\Eloquent\Model;
 class Noun extends Model
 {
     use HasFactory;
-    protected $fillable = ['name', 'plural', 'genus', 'usage'];
+    protected $fillable = ['plural', 'genus'];
 }

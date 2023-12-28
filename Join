@@ -1,0 +1,2 @@
+#! /bin/bash
+php vendor/hamatoma/laraknife/src/Builder.php update:languages resources/lang/sources resources/lang/de_DE.json

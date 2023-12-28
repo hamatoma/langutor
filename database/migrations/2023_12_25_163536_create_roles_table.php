@@ -1,0 +1,1 @@
+../../vendor/hamatoma/laraknife/templates/database/migrations/2023_12_25_163536_create_roles_table.php

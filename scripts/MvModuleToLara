@@ -1,0 +1,54 @@
+#! /bin/bash
+MODULE=$1
+MODULE_CAPITAL=$2
+VENDOR=vendor/hamatoma/laraknife
+function Usage(){
+    echo "Usage: MvModuleToLara MODULE MODULE_CAPITAL"
+    echo "Example MvModuleToLara role Role"
+    echo "+++ $*"
+}
+function MoveOne(){
+  local src=$1
+  local trg=$2
+  local relTrg=$3
+  if [ -f $trg ]; then
+      echo "+++ $trg already exists"
+    else
+      mv -v $src $trg
+      ln -s $relTrg $src
+      ls -ld $src
+    fi
+}
+if [ -z "$MODULE" ]; then
+  Usage "missing MODULE"
+elif [ ! -f resources/views/$MODULE/create.blade.php ]; then
+  Usage "missing resources/views/$MODULE/create.blade.php"
+else
+    DIR=views/$MODULE
+    SRC=resources/$DIR
+    TRG=$VENDOR/resources/$DIR
+    if [ -d $TRG ]; then
+      echo "+++ $TRG already exists"
+    else
+        mv -v $SRC $TRG
+        ln -s ../../$VENDOR/resources/views/$MODULE resources/views
+        ls -ld $SRC
+    fi
+    FN=Http/Controllers/${MODULE_CAPITAL}Controller.php
+    SRC=app/$FN
+    TRG=$VENDOR/templates/$FN
+    REL_TRG=../../../$TRG
+    MoveOne $SRC $TRG $REL_TRG
+    FN=Models/${MODULE_CAPITAL}.php
+    SRC=app/$FN
+    TRG=$VENDOR/templates/$FN
+    REL_TRG=../../$TRG
+    MoveOne $SRC $TRG $REL_TRG
+    FN=database/migrations/*create_$MODULE*.php
+    NODE=$(basename $FN)
+    DIR=database/migrations
+    SRC=$FN
+    TRG=$VENDOR/templates/$DIR/$NODE
+    REL_TRG=../../$TRG
+    MoveOne $SRC $TRG $REL_TRG
+fi

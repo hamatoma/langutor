@@ -3,11 +3,13 @@
 namespace App\Http\Controllers;
 
 use App\Models\Noun;
-use App\Helpers\DbAccess;
+use App\Models\Word;
+use App\Helpers\Pagination;
+use App\Helpers\ViewHelper;
+use App\Helpers\DbHelper;
 use App\Models\SProperty;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Hamatoma\Laraknife\ViewHelpers;
 use Illuminate\Support\Facades\Route;
 
 class NounController extends Controller
@@ -25,8 +27,9 @@ class NounController extends Controller
      */
     public function edit(Noun $noun)
     {
-        $options = SProperty::optionsByScope('genus', '');
-        return view('noun.edit', ['noun' => $noun, 'options' => $options]);
+        $options = SProperty::optionsByScope('genus', $noun->genus);
+        $word = Word::find($noun->word_id);
+        return view('noun.edit', ['noun' => $noun, 'word' => $word, 'options' => $options]);
     }
 
     /**
@@ -37,34 +40,30 @@ class NounController extends Controller
         if (array_key_exists('btnSubmit', $_POST) && $_POST['btnSubmit'] == 'btnNew') {
             return redirect('/noun-create');
         } else {
-            $records = null;
-            $join = 'join sproperties s1 ON s1.id=n.genus';
-            $limit = 100;
+            $sql = <<<EOS
+SELECT t0.*,t1.name as genusstr, t1.value as article, t2.usage, t2.name
+FROM nouns t0
+JOIN sproperties t1 ON t1.id=t0.genus JOIN words t2 ON t2.id=t0.word_id
+EOS;
+            $parameters = [];
             if (count($_POST) == 0) {
-                $fields = ['genus' => '', 'text' => ''];
+                $fields = ['genus' => '', 'text' => '', '_sortParams' => 'name:asc'];
             } else {
                 $fields = $_POST;
                 $conditions = [];
-                $parameters = [];
-                ViewHelpers::addConditionComparism($conditions, $parameters, 'genus');
-                ViewHelpers::addConditionPattern($conditions, $parameters, 'n.name,n.plural', 'text');
-                if (count($conditions) > 0) {
-                    $condition = count($conditions) == 1 ? $conditions[0] : implode(' AND ', $conditions);
-                    $records = DB::select("select n.*,s1.name as genusstr,s1.value as article from nouns n $join where $condition order by n.name,n.id limit $limit", $parameters);
-                }
+                ViewHelper::addConditionComparism($conditions, $parameters, 'genus');
+                ViewHelper::addConditionPattern($conditions, $parameters, 't2.name,t0.plural', 'text');
+                $sql = DbHelper::addConditions($sql, $conditions);
             }
-            if ($records === null) {
-                $records = DB::select("select n.*,s1.name as genusstr, s1.value as article from nouns n $join order by n.name,n.id limit $limit");
-             }
-            $options = SProperty::optionsByScope('genus', $fields['genus'], '<all>');
-            $sproperty = new DbAccess('sproperties');
-            $value = $sproperty->columnOf(1, 'name');
+            $sql = DbHelper::addOrderBy($sql, $fields['_sortParams']);
+            $records = DB::select($sql, $parameters);
+            $pagination = new Pagination($sql, $parameters, $fields);
+            $options = SProperty::optionsByScope('genus', $fields['genus'], '<All>');
             return view('noun.index', [
                 'records' => $records,
                 'fields' => $fields,
                 'options' => $options,
-                '' => $sproperty,
-                'legend' => ''
+                'pagination' => $pagination
             ]);
         }
     }
@@ -74,14 +73,16 @@ class NounController extends Controller
      * Returns the validation rules.
      * @return array<string, string> The validation rules.
      */
-    private function rules(): array
+    private function rules(bool $isCreate = false): array
     {
         $rc = [
-            'name' => 'required|alpha',
             'plural' => 'required|alpha',
             'genus' => 'required',
             'usage' => 'nullable'
         ];
+        if ($isCreate) {
+            $rc['name'] = 'required|alpha|unique:words';
+        }
         return $rc;
     }
     public static function routes()
@@ -110,9 +111,18 @@ class NounController extends Controller
     public function store(Request $request)
     {
         if ($request->btnSubmit == 'btnStore') {
-            $incomingFields = $request->validate($this->rules());
+            $incomingFields = $request->validate($this->rules(true));
             $incomingFields['usage'] = strip_tags($incomingFields['usage']);
-            Noun::create($incomingFields);
+            $wordType = SProperty::byScopeAndName('wordtype', 'Noun') ?? 1011;
+            $wordId = DB::table('words')->insertGetId([
+                'name' => $incomingFields['name'],
+                'usage' => $incomingFields['usage'],
+                'wordtype' => $wordType
+            ]);
+            unset($incomingFields['name']);
+            unset($incomingFields['usage']);
+            $incomingFields['word_id'] = $wordId;
+            $id = DB::table('nouns')->insertGetId($incomingFields);
         }
         return redirect('/noun-index');
     }
@@ -125,7 +135,9 @@ class NounController extends Controller
         if ($request->btnSubmit == 'btnStore') {
             $incomingFields = $request->validate($this->rules());
             $incomingFields['usage'] = strip_tags($incomingFields['usage']);
-            $noun->update($incomingFields);
+            $noun->update(['genus' => $incomingFields['genus']]);
+            $word = Word::find($noun->word_id);
+            $word->update(['usage' => $incomingFields['usage']]);
         }
         return redirect('/noun-index');
     }
